@@ -108,6 +108,8 @@ struct Options: Codable, Equatable {
     var backgroundAudio: Bool
     /// If Ksign should show logs when signing
     var signingLogs: Bool
+    /// If Ksign should notify when download is completed
+    var notifications: Bool
 	// default
 	static let defaultOptions = Options(
 		appAppearance: "Default",
@@ -138,7 +140,8 @@ struct Options: Codable, Equatable {
         experiment_supportLiquidGlass: false,
         experiment_replaceSubstrateWithEllekit: false,
         backgroundAudio: true,
-        signingLogs: false
+        signingLogs: false,
+        notifications: false
 	)
 	// extraction library values
 	static let extractionLibraryValues = ["Zip", "ZIPFoundation"]

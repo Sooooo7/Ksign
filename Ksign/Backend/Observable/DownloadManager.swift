@@ -9,6 +9,7 @@ import Foundation
 import Combine
 import UIKit.UIImpactFeedbackGenerator
 import SwiftUI // For ByteCountFormatter
+import UserNotifications
 
 // Import the error handlers module
 @_exported import class UIKit.UIImpactFeedbackGenerator
@@ -171,6 +172,9 @@ extension DownloadManager: URLSessionDownloadDelegate {
 				if let dl = dl, let index = DownloadManager.shared.getDownloadIndex(by: dl.id) {
 					DownloadManager.shared.downloads.remove(at: index)
 				}
+				if err == nil {
+					self._notifyDownloadCompleted(fileName: url.lastPathComponent)
+				}
 				completion(err)
 			}
 		}
@@ -236,5 +240,24 @@ extension DownloadManager: URLSessionDownloadDelegate {
 				self.downloads.remove(at: index)
 			}
 		}
+    }
+    
+    
+    private func _notifyDownloadCompleted(fileName: String) {
+        guard OptionsManager.shared.options.notifications else { return }
+        let content = UNMutableNotificationContent()
+        content.title = String.localized("Download Completed")
+        content.body = fileName
+        content.sound = .default
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
+        let request = UNNotificationRequest(
+            identifier: "download.\(fileName)",
+            content: content,
+            trigger: trigger
+        )
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error { print("Failed to schedule notification: \(error.localizedDescription)") }
+        }
     }
 }
