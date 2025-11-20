@@ -125,7 +125,15 @@ extension CertificatesView {
 	@ViewBuilder
 	private func _actions(for cert: CertificatePair) -> some View {
 		Button(role: .destructive) {
-			Storage.shared.deleteCertificate(for: cert)
+			if certificates.count == 1 {
+                UIAlertController.showAlertWithOk(
+                    title: .localized("You don't want to do this!"),
+                    message: .localized("You don't want to delete your only certificate, right >.<?"),
+                    isCancel: true
+                )
+            } else {
+                Storage.shared.deleteCertificate(for: cert)
+            }
 		} label: {
 			Label(.localized("Delete"), systemImage: "trash")
 		}
